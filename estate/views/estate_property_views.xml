@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="estate_property_action" model="ir.actions.act_window">
+        <field name="name">Propietat immobiliària</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_estate_property_tree"/>
+        <field name="domain">[]</field>
+    </record>
+
+    <record id="estate_property_tag_action" model="ir.actions.act_window">
+        <field name="name">Etiquetes</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="estate_property_tipus_action" model="ir.actions.act_window">
+        <field name="name">Tipus</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <record id="view_estate_property_tree" model="ir.ui.view">
+        <field name="name">estate.property.tree</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="property_type"/>
+                <field name="postcode"/>
+                <field name="date_availability"/>
+                <field name="expected_selling_price"/>
+                <field name="salesperson"/>
+                <field name="state"/>
+                <field name="buyer" attrs="{'invisible': [('state', 'not in', ['Venuda', 'Sold'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="estate_property_view_form" model="ir.ui.view">
+        <field name="name">estate.property.form</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <form string="Propietat Immobiliària">
+                <sheet>
+                    <!-- Atributs principals -->
+                    <group>
+                        <field name="name" class="oe_inline"/>
+                        <field name="postcode"/>
+                        <field name="date_availability"/>
+                        <field name="expected_selling_price"/>
+                        <field name="best_offer"/>
+                        <field name="state"/>
+                        <field name="property_type"/>
+                    </group>
+
+                    <!-- Pestanya descripció -->
+                    <notebook>
+                        <page string="Descripció">
+                            <group>
+                                <field name="description"/>
+                                <field name="bedrooms"/>
+                                <field name="area"/>
+                                <field name="avg_price"/>
+                                <field name="tag_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+
+                        <!-- Pestanya ofertes -->
+                        <page string="Ofertes">
+                            <field name="offer_ids" widget="one2many_list">
+                                <tree>
+                                    <field name="buyer"/>
+                                    <field name="price"/>
+                                    <button string="Acceptar Oferta" type="object" class="oe_highlight" name="accept_offer"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <!-- botó per a cancel·lar -->
+                    <group>
+                        <button name="cancellarPropietat" type="object" string="Cancel·lar"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_estate_property_search" model="ir.ui.view">
+        <field name="name">estate.property.search</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <!-- Filtres de la barra de búsqueda -->
+            <search string="Search Property">
+                <field name="name"/>
+                <field name="property_type"/>
+                <field name="postcode"/>
+                <field name="expected_selling_price"/>
+                <field name="state"/>
+                <field name="date_availability"/>
+                <field name="tag_ids" widget="many2many_tags" options="{'no_create': True}" string="Etiquetes"/>
+                <!-- afegir més camps aquí (si fan falta) -->
+
+                <!-- Filtres personalitzats ("domain" és el condicionant del filtratge)-->
+                <group expand="0" string="Predefined Filters">
+                    <filter string="Disponibles" name="filter_disponibles" domain="[('state', 'in', ['New', 'Offer Recieved'])]" 
+                    help="Propietats noves o amb oferta rebuda"/>
+                    <filter string="Baix preu" name="filter_baix_preu" domain="[('expected_selling_price', '&lt;', 100000)]" 
+                    help="Preu de venda inferior a 100.000 €;"/>
+                </group>
+
+                <!-- Agrupacions personalitzades ("context" és el condicionant de les agrupacions) -->
+                <group expand="0" string="Group By">
+                    <filter string="Codi Postal" name="Codi Postal" context="{'group_by':'postcode'}"/>
+                    <filter string="Tipus" name="group_by_property_type" context="{'group_by':'property_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+</odoo>
+
+
